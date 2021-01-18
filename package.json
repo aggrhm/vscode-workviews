@@ -1,0 +1,118 @@
+{
+	"name": "workviews",
+	"displayName": "Workviews",
+	"description": "Store workviews for switching between different file groups",
+	"version": "1.0.3",
+	"publisher": "agquick",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/agquick/vscode-workviews.git"
+	},
+	"engines": {
+		"vscode": "^1.52.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onView:workviews"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"views": {
+			"explorer": [
+				{
+					"id": "workviews",
+					"name": "Workviews"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"when": "view == workviews",
+					"command": "workviews.startNewWorkview",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"when": "view == workviews && viewItem == workview",
+					"command": "workviews.renameWorkview",
+					"group": "context@1"
+				},
+				{
+					"when": "view == workviews && viewItem == workview",
+					"command": "workviews.deleteWorkview",
+					"group": "context@2"
+				},
+				{
+					"when": "view == workviews && viewItem == document",
+					"command": "workviews.removeRelevantDocument"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "workviews.startNewWorkview",
+				"title": "Start new workview",
+				"icon": "$(add)"
+			},
+			{
+				"command": "workviews.restoreWorkview",
+				"title": "Restore existing workview"
+			},
+			{
+				"command": "workviews.deleteWorkview",
+				"title": "Delete workview",
+				"icon": "$(trash)"
+			},
+			{
+				"command": "workviews.renameWorkview",
+				"title": "Rename workview",
+				"icon": "$(pencil)"
+			},
+			{
+				"command": "workviews.openDocument",
+				"title": "Open document"
+			},
+			{
+				"command": "workviews.removeRelevantDocument",
+				"title": "Remove relevant document"
+			}
+		],
+		"configuration": [
+			{
+				"title": "Workviews",
+				"properties": {
+					"workviews.state": {
+						"type": "string",
+						"scope": "window",
+						"description": "Used to save your workview state across windows. Do not modify."
+					}
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.52.0",
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.4",
+		"@types/node": "^12.11.7",
+		"eslint": "^7.15.0",
+		"@typescript-eslint/eslint-plugin": "^4.9.0",
+		"@typescript-eslint/parser": "^4.9.0",
+		"glob": "^7.1.6",
+		"mocha": "^8.1.3",
+		"typescript": "^4.1.2",
+		"vscode-test": "^1.4.1"
+	}
+}
