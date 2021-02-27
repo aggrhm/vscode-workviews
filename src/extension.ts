@@ -57,8 +57,19 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	disposable = vscode.commands.registerCommand('workviews.removeRelevantDocument', async (item: TreeItem) => {
-		workviewsView.removeRelevantDocument(item.data);
+		workviewsView.removeDocument(item.data, true);
 	})
+	context.subscriptions.push(disposable);
+
+	// window events
+	disposable = vscode.window.onDidChangeVisibleTextEditors( (editors)=>{
+		workviewsView.setVisibleEditors(editors);
+	});
+	context.subscriptions.push(disposable);
+	disposable = vscode.workspace.onDidCloseTextDocument( (doc)=>{
+		console.debug("Closing document " + doc.uri.toString());
+		workviewsView.removeDocument(doc);
+	});
 	context.subscriptions.push(disposable);
 }
 

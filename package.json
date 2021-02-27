@@ -48,7 +48,8 @@
 				},
 				{
 					"when": "view == workviews && viewItem == document",
-					"command": "workviews.removeRelevantDocument"
+					"command": "workviews.removeRelevantDocument",
+					"group": "inline"
 				}
 			]
 		},
@@ -78,7 +79,8 @@
 			},
 			{
 				"command": "workviews.removeRelevantDocument",
-				"title": "Remove relevant document"
+				"title": "Remove relevant document",
+				"icon": "$(close)"
 			}
 		],
 		"configuration": [
