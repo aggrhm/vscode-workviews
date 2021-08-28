@@ -91,7 +91,7 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
             this.workviews = data.workviews.map( (s : any) => {
                 return new Workview(s.id, s.name, s.editors || []);
             });
-            this.activeWorkviewID = data.activeWorkviewID;
+            //this.activeWorkviewID = data.activeWorkviewID;
         } catch {
             console.debug("Settings were not successfully decoded.");
         }
@@ -264,7 +264,7 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
 
     async save() {
         console.log("Saving state.");
-        const json = JSON.stringify({workviews: this.workviews, activeWorkviewID: this.activeWorkviewID});
+        const json = JSON.stringify({workviews: this.workviews});
         console.debug("Saving " + json);
         const data = Buffer.from(json).toString("base64");
         await vscode.workspace.getConfiguration().update("workviews.state", data, false);

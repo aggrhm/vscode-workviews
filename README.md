@@ -23,8 +23,24 @@ This extension contributes the following settings:
 
 * VS Code does not provide ability to directly access open editors at this time ([vscode #15178](https://github.com/Microsoft/vscode/issues/15178))
 
+## Contributing
+
+For local deployment:
+
+```
+# update version in package.json
+# update release notes in README
+
+$ vsce package
+$ code --install-extension workviews-1.1.x.vsix
+```
+
 ## Release Notes
 
 ### 1.1.0
 
 Changed method of keeping track of relevant documents for a workviews
+
+### 1.1.1
+
+Stopped storing activeWorkviewID in settings
