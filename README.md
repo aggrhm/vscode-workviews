@@ -30,7 +30,6 @@ This extension contributes the following settings:
 For local deployment:
 
 ```
-# update version in package.json
 # add CHANGELOG entry 
 
 $ vsce package

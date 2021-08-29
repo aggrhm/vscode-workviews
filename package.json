@@ -8,6 +8,7 @@
 		"type": "git",
 		"url": "https://github.com/agquick/vscode-workviews.git"
 	},
+	"icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
