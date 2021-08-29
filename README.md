@@ -1,5 +1,7 @@
 # Workviews
 
+[![Donate Ko-Fi](https://img.shields.io/badge/donate-ko--fi-29abe0.svg?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/agquick)
+
 This extension allows you to quickly switch between sets of files (i.e. "workviews") within a VS Code window. 
 
 Your active workview is automatically saved each time it is switched. The extension shows up in the "Explorer" tab and can be rearranged.
@@ -23,24 +25,18 @@ This extension contributes the following settings:
 
 * VS Code does not provide ability to directly access open editors at this time ([vscode #15178](https://github.com/Microsoft/vscode/issues/15178))
 
-## Contributing
+## Release Notes
 
 For local deployment:
 
 ```
 # update version in package.json
-# update release notes in README
+# add CHANGELOG entry 
 
 $ vsce package
 $ code --install-extension workviews-1.1.x.vsix
+
+# or
+
+$ vsce publish [major|patch|minor]
 ```
-
-## Release Notes
-
-### 1.1.0
-
-Changed method of keeping track of relevant documents for a workviews
-
-### 1.1.1
-
-Stopped storing activeWorkviewID in settings

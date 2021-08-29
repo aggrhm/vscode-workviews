@@ -4,6 +4,10 @@ All notable changes to the "workviews" extension will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.1.0]
 
-- Initial release
+- Changed method of keeping track of relevant documents for a workviews
+
+## [1.1.1]
+
+- Stopped storing activeWorkviewID in settings
