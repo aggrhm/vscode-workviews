@@ -49,7 +49,17 @@
 				},
 				{
 					"when": "view == workviews && viewItem == document",
-					"command": "workviews.removeRelevantDocument",
+					"command": "workviews.pinWorkviewDocument",
+					"group": "inline"
+				},
+				{
+					"when": "view == workviews && viewItem == document",
+					"command": "workviews.removeWorkviewDocument",
+					"group": "inline"
+				},
+				{
+					"when": "view == workviews && viewItem == document_pinned",
+					"command": "workviews.unpinWorkviewDocument",
 					"group": "inline"
 				}
 			]
@@ -79,9 +89,19 @@
 				"title": "Open document"
 			},
 			{
-				"command": "workviews.removeRelevantDocument",
-				"title": "Remove relevant document",
+				"command": "workviews.removeWorkviewDocument",
+				"title": "Remove workview document",
 				"icon": "$(close)"
+			},
+			{
+				"command": "workviews.pinWorkviewDocument",
+				"title": "Keep document in list (even when closed)",
+				"icon": "$(pinned)"
+			},
+			{
+				"command": "workviews.unpinWorkviewDocument",
+				"title": "Unpin workview document",
+				"icon": "$(pinned-dirty)"
 			}
 		],
 		"configuration": [

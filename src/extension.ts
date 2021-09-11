@@ -56,9 +56,25 @@ export function activate(context: vscode.ExtensionContext) {
 	})
 	context.subscriptions.push(disposable);
 
-	disposable = vscode.commands.registerCommand('workviews.removeRelevantDocument', async (item: TreeItem) => {
-		workviewsView.removeDocument(item.data, true);
-	})
+	disposable = vscode.commands.registerCommand('workviews.removeWorkviewDocument', async (item: TreeItem) => {
+		workviewsView.forActiveWorkview((workview)=>{
+			return workview.removeEditor(item.data.uri);
+		}, true);
+	});
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('workviews.pinWorkviewDocument', async (item: TreeItem) => {
+		workviewsView.forActiveWorkview((workview)=>{
+			return workview.pinDocument(item.data);
+		}, true);
+	});
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('workviews.unpinWorkviewDocument', async (item: TreeItem) => {
+		workviewsView.forActiveWorkview((workview)=>{
+			return workview.unpinDocument(item.data);
+		}, true);
+	});
 	context.subscriptions.push(disposable);
 
 	// window events
@@ -68,13 +84,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 	disposable = vscode.workspace.onDidCloseTextDocument( (doc)=>{
 		console.debug("Closing document " + doc.uri.toString());
-		workviewsView.removeDocument(doc);
+		workviewsView.handleTextDocumentClosed(doc);
 	});
 	context.subscriptions.push(disposable);
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-	console.debug("Saving workviews state before closing.")
+	console.debug("Saving workviews state before closing.");
 	return workviewsView.save();
 }
