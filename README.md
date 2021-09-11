@@ -14,6 +14,7 @@ Your active workview is automatically saved each time it is switched. The extens
 * Autosaves current workview when a new workview is selected
 * Keeps track of files relevant to a workview when they are opened and closed (also manually removable)
 * Attempts to restore the tabs in the same grid position
+* Ability to pin documents to keep them in the workview document list
 
 ## Extension Settings
 
@@ -37,5 +38,5 @@ $ code --install-extension workviews-1.1.x.vsix
 
 # or
 
-$ vsce publish [major|patch|minor]
+$ vsce publish [major|minor|patch]
 ```

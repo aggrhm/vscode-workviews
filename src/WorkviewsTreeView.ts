@@ -13,22 +13,32 @@ export class Workview {
     id: string;
     name: string;
     editors: Editor[];
+    pinnedDocuments: Document[];
     
     static newID() : string {
         return `${Date.now()}`;
     }
-    constructor(id: string, name: string, editors: Editor[]) {
+    static editorToDocument(e: Editor) : Document {
+        return {
+            uri: e.uri,
+            lastViewColumn: e.viewColumn
+        };
+    }
+    static getURIBasename(uri: string) : string {
+        let path = vscode.Uri.parse(uri).path;
+        let basename = path.split("/").pop()!;
+        return basename;
+    }
+    constructor(id: string, name: string, editors: Editor[], pinnedDocuments: Document[]) {
         this.id = id;
         this.name = name;
         this.editors = editors || [];
+        this.pinnedDocuments = pinnedDocuments || [];
     }
 
-    get documents() : Document[] {
+    get editorDocuments() : Document[] {
         return this.editors.map((e)=>{
-            return {
-                uri: e.uri,
-                lastViewColumn: e.viewColumn
-            }
+            return Workview.editorToDocument(e);
         });
     }
 
@@ -55,10 +65,31 @@ export class Workview {
         console.debug("Updating editors to " + JSON.stringify(this.editors));
     }
 
-    removeDocument(document: vscode.TextDocument) : boolean {
+    findEditor(uri: string) : Editor {
+        return this.editors.filter((e)=> {return e.uri == uri;})[0];
+    }
+
+    findPinnedDocument(uri: string) : Editor {
+        return this.pinnedDocuments.filter((d)=> {return d.uri == uri;})[0];
+    }
+
+    removeEditor(uri: string) : boolean {
         let len = this.editors.length;
-        this.editors = this.editors.filter( (e) => {return e.uri != document.uri.toString();});
+        this.editors = this.editors.filter( (e) => {return e.uri != uri;});
+        //console.log("Editors is now: " + JSON.stringify(this.editors));
         return this.editors.length != len;
+    }
+
+    pinDocument(doc: Document) : boolean {
+        if (this.findPinnedDocument(doc.uri)) { return false };
+        this.pinnedDocuments.push(doc);
+        return true;
+    }
+
+    unpinDocument(doc: Document) : boolean {
+        if (!this.findPinnedDocument(doc.uri)) { return false };
+        this.pinnedDocuments = this.pinnedDocuments.filter((d)=> {return d.uri != doc.uri;});
+        return true;
     }
 }
 export enum TreeItemType {
@@ -68,11 +99,13 @@ export class TreeItem {
     public type: TreeItemType;
     public title: string;
     public data: any;
+    public pinned: boolean;
     
     constructor(type: TreeItemType, title: string, data: any) {
         this.type = type;
         this.title = title;
         this.data = data;
+        this.pinned = false;
     }
 }
 
@@ -84,16 +117,18 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
     constructor() {
         this.workviews = [];
         // load from workspace
+        console.debug("Loading workviews state from settings");
         const base64 = vscode.workspace.getConfiguration().get('workviews.state', '');
         const decoded = Buffer.from(base64, 'base64').toString('ascii');
         try {
             const data = JSON.parse(decoded);
             this.workviews = data.workviews.map( (s : any) => {
-                return new Workview(s.id, s.name, s.editors || []);
+                return new Workview(s.id, s.name, s.editors || [], s.pinnedDocuments || []);
             });
             //this.activeWorkviewID = data.activeWorkviewID;
-        } catch {
-            console.debug("Settings were not successfully decoded.");
+            console.debug("Settings successfully loaded.");
+        } catch (ex) {
+            console.debug(`Settings were not successfully decoded (${ex.message}).`);
         }
         this.lastSavedAt = new Date();
     }
@@ -123,6 +158,7 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
         } else if (element.type == TreeItemType.SECTION_RELEVANT || element.type == TreeItemType.SECTION_WORKVIEWS) {
             ret.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         } else if (element.type == TreeItemType.DOCUMENT) {
+            if (element.pinned == true) { ret.contextValue = "document_pinned"; }
             ret.collapsibleState = vscode.TreeItemCollapsibleState.None;
             ret.resourceUri = vscode.Uri.parse((element.data as Document).uri);
             //ret.iconPath = new vscode.ThemeIcon("selection");
@@ -149,12 +185,20 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
         } else if (element.type == TreeItemType.WORKVIEW) {
             let workview = this.activeWorkview();
             if (workview && workview == element.data) {
+                // set hash
+                let mh : Record<string, TreeItem> = {};
                 // list documents
-                let items = workview.documents.map( (d)=> {
-                    let path = vscode.Uri.parse(d.uri).path;
-                    let basename = path.split("/").pop()!;
-                    return new TreeItem(TreeItemType.DOCUMENT, basename, d)
+                workview.editors.forEach( (e)=> {
+                    let d = Workview.editorToDocument(e);
+                    let ti = new TreeItem(TreeItemType.DOCUMENT, Workview.getURIBasename(d.uri), d);
+                    mh[d.uri] = ti;
                 });
+                workview.pinnedDocuments.forEach( (d)=> {
+                    let ti = new TreeItem(TreeItemType.DOCUMENT, Workview.getURIBasename(d.uri), d);
+                    ti.pinned = true;
+                    mh[d.uri] = ti;
+                });
+                let items = Object.values(mh);
                 items.sort( (s1, s2) => {
                     return s1.title.localeCompare(s2.title);
                 });
@@ -179,7 +223,7 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
         await this.clearEditors();
 
         // create new workview
-        let workview = new Workview(Workview.newID(), name, []);
+        let workview = new Workview(Workview.newID(), name, [], []);
         this.workviews.push(workview);
         this.activeWorkviewID = workview.id;
 
@@ -224,19 +268,31 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
         await this.save();
     }
 
-    async removeDocument(document: vscode.TextDocument, forceSave: boolean = false) {
+    async handleTextDocumentClosed(document: vscode.TextDocument) {
         let view = this.activeWorkview();
         if (!view) return;
-        if (view.removeDocument(document)) {
+        let uri = document.uri.toString();
+        // remove from editors if not pinned
+        if (view.findEditor(uri)) {
+            view.removeEditor(uri);
+            await this.notifyChanged();
+        }
+    }
+
+    async forActiveWorkview(fn: (workview: Workview)=>boolean, forceSave: boolean = false) {
+        let view = this.activeWorkview();
+        if (!view) return;
+        let changed = fn(view);
+        if (changed || forceSave) {
             await this.notifyChanged(forceSave);
         }
     }
 
     async setVisibleEditors(editors: vscode.TextEditor[]) {
-		console.debug("Visible editors updated.")
+		console.debug("Visible editors updated.");
         let view = this.activeWorkview();
         if (!view) return;
-        view.setVisibleEditors(editors)
+        view.setVisibleEditors(editors);
         await this.notifyChanged();
     }
 

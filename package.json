@@ -2,7 +2,11 @@
 	"name": "workviews",
 	"displayName": "Workviews",
 	"description": "Quickly switch between sets of files (i.e. 'workviews') within a VS Code window",
+<<<<<<< HEAD
 	"version": "1.1.3",
+=======
+	"version": "1.2.0",
+>>>>>>> feature/pinned-docs
 	"publisher": "agquick",
 	"repository": {
 		"type": "git",
@@ -49,7 +53,17 @@
 				},
 				{
 					"when": "view == workviews && viewItem == document",
-					"command": "workviews.removeRelevantDocument",
+					"command": "workviews.pinWorkviewDocument",
+					"group": "inline"
+				},
+				{
+					"when": "view == workviews && viewItem == document",
+					"command": "workviews.removeWorkviewDocument",
+					"group": "inline"
+				},
+				{
+					"when": "view == workviews && viewItem == document_pinned",
+					"command": "workviews.unpinWorkviewDocument",
 					"group": "inline"
 				}
 			]
@@ -79,9 +93,19 @@
 				"title": "Open document"
 			},
 			{
-				"command": "workviews.removeRelevantDocument",
-				"title": "Remove relevant document",
+				"command": "workviews.removeWorkviewDocument",
+				"title": "Remove workview document",
 				"icon": "$(close)"
+			},
+			{
+				"command": "workviews.pinWorkviewDocument",
+				"title": "Keep document in list (even when closed)",
+				"icon": "$(pinned)"
+			},
+			{
+				"command": "workviews.unpinWorkviewDocument",
+				"title": "Unpin workview document",
+				"icon": "$(pinned-dirty)"
 			}
 		],
 		"configuration": [
