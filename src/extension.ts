@@ -84,6 +84,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 	disposable = vscode.workspace.onDidCloseTextDocument( (doc)=>{
 		console.debug("Closing document " + doc.uri.toString());
+		//console.debug("Closing document " + doc.fileName);
 		workviewsView.handleTextDocumentClosed(doc);
 	});
 	context.subscriptions.push(disposable);

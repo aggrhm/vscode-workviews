@@ -76,7 +76,7 @@ export class Workview {
     removeEditor(uri: string) : boolean {
         let len = this.editors.length;
         this.editors = this.editors.filter( (e) => {return e.uri != uri;});
-        console.log("Editors is now: " + JSON.stringify(this.editors));
+        //console.log("Editors is now: " + JSON.stringify(this.editors));
         return this.editors.length != len;
     }
 
@@ -117,6 +117,7 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
     constructor() {
         this.workviews = [];
         // load from workspace
+        console.debug("Loading workviews state from settings");
         const base64 = vscode.workspace.getConfiguration().get('workviews.state', '');
         const decoded = Buffer.from(base64, 'base64').toString('ascii');
         try {
@@ -125,8 +126,9 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
                 return new Workview(s.id, s.name, s.editors || [], s.pinnedDocuments || []);
             });
             //this.activeWorkviewID = data.activeWorkviewID;
-        } catch {
-            console.debug("Settings were not successfully decoded.");
+            console.debug("Settings successfully loaded.");
+        } catch (ex) {
+            console.debug(`Settings were not successfully decoded (${ex.message}).`);
         }
         this.lastSavedAt = new Date();
     }
