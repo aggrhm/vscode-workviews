@@ -15,3 +15,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.2.0]
 
 - Added support for pinning documents in workview
+
+## [1.2.1]
+
+- Added `rememberActiveWorkview` option

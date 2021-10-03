@@ -125,9 +125,11 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
             this.workviews = data.workviews.map( (s : any) => {
                 return new Workview(s.id, s.name, s.editors || [], s.pinnedDocuments || []);
             });
-            //this.activeWorkviewID = data.activeWorkviewID;
+            if (data.activeWorkviewID && vscode.workspace.getConfiguration().get('workviews.rememberActiveWorkview', false)) {
+                this.activeWorkviewID = data.activeWorkviewID;
+            }
             console.debug("Settings successfully loaded.");
-        } catch (ex) {
+        } catch (ex:any) {
             console.debug(`Settings were not successfully decoded (${ex.message}).`);
         }
         this.lastSavedAt = new Date();
@@ -239,8 +241,8 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
 
         // load editor views
         let sorted_editors = workview.editors.sort( (e1, e2)=> {
-            let v1 = (e1.viewColumn || 1) * 10 + (e1.visible ? 1 : 0)
-            let v2 = (e2.viewColumn || 1) * 10 + (e2.visible ? 1 : 0)
+            let v1 = (e1.viewColumn || 1) * 10 + (e1.visible ? 1 : 0);
+            let v2 = (e2.viewColumn || 1) * 10 + (e2.visible ? 1 : 0);
             return v1 - v2;
         });
         for (let editor of sorted_editors) {
@@ -320,7 +322,7 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
 
     async save() {
         console.log("Saving state.");
-        const json = JSON.stringify({workviews: this.workviews});
+        const json = JSON.stringify({workviews: this.workviews, activeWorkviewID: this.activeWorkviewID});
         console.debug("Saving " + json);
         const data = Buffer.from(json).toString("base64");
         await vscode.workspace.getConfiguration().update("workviews.state", data, false);

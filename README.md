@@ -21,6 +21,7 @@ Your active workview is automatically saved each time it is switched. The extens
 This extension contributes the following settings:
 
 * `workviews.state`: (readonly) The internal state of the extension, allowing workviews to be persisted
+* `workviews.rememberActiveWorkview`: (boolean) Keep track of active workview in saved state
 
 ## Known Issues
 

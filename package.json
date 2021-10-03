@@ -112,6 +112,12 @@
 						"type": "string",
 						"scope": "window",
 						"description": "Used to save your workview state across windows. Do not modify."
+					},
+					"workviews.rememberActiveWorkview": {
+						"type": "boolean",
+						"default": false,
+						"scope": "window",
+						"description": "Remember the active workview after reloading or reopening the window."
 					}
 				}
 			}
