@@ -2,7 +2,7 @@
 	"name": "workviews",
 	"displayName": "Workviews",
 	"description": "Quickly switch between sets of files (i.e. 'workviews') within a VS Code window",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"publisher": "agquick",
 	"repository": {
 		"type": "git",
