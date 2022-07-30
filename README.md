@@ -33,8 +33,7 @@ This extension contributes the following settings:
 For local deployment:
 
 ```
-# add CHANGELOG entry 
-# update package.json version
+# add CHANGELOG entry (no need to update package.json version, `vsce publish` will update)
 
 $ vsce package
 $ code --install-extension workviews-1.1.x.vsix

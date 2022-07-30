@@ -20,6 +20,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Added `rememberActiveWorkview` option
 
-## [1.2.2]
+## [1.2.3]
 
 - Added `restorePinnedOnly` option
