@@ -22,6 +22,7 @@ This extension contributes the following settings:
 
 * `workviews.state`: (readonly) The internal state of the extension, allowing workviews to be persisted
 * `workviews.rememberActiveWorkview`: (boolean) Keep track of active workview in saved state
+* `workviews.restorePinnedOnly`: (boolean) Restore only the pinned and last viewed documents, rather than all documents opened
 
 ## Known Issues
 
@@ -33,6 +34,7 @@ For local deployment:
 
 ```
 # add CHANGELOG entry 
+# update package.json version
 
 $ vsce package
 $ code --install-extension workviews-1.1.x.vsix

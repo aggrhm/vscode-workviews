@@ -56,7 +56,7 @@ export class Workview {
                 uri: uri,
                 viewColumn: e.viewColumn || 1,
                 visible: true
-            }
+            };
         });
         // store new editors
         this.editors = Object.keys(eh).map( (k)=> {
@@ -239,12 +239,21 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
         // clear active workview
         await this.clearEditors();
 
-        // load editor views
+        // restore only pinned and visible documents
+        if (vscode.workspace.getConfiguration().get("workviews.restorePinnedOnly", false)) {
+            workview.editors = workview.editors.filter((e)=>{
+                return e.visible == true || workview.findPinnedDocument(e.uri) != undefined;
+            });
+        }
+
+        // sort editor views
         let sorted_editors = workview.editors.sort( (e1, e2)=> {
             let v1 = (e1.viewColumn || 1) * 10 + (e1.visible ? 1 : 0);
             let v2 = (e2.viewColumn || 1) * 10 + (e2.visible ? 1 : 0);
             return v1 - v2;
         });
+
+        // open editor views
         for (let editor of sorted_editors) {
             this.openEditor(editor);
         }
