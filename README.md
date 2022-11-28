@@ -24,10 +24,6 @@ This extension contributes the following settings:
 * `workviews.rememberActiveWorkview`: (boolean) Keep track of active workview in saved state
 * `workviews.restorePinnedOnly`: (boolean) Restore only the pinned and last viewed documents, rather than all documents opened
 
-## Known Issues
-
-* VS Code does not provide ability to directly access open editors at this time ([vscode #15178](https://github.com/Microsoft/vscode/issues/15178))
-
 ## Release Notes
 
 For local deployment:

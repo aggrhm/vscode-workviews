@@ -65,6 +65,23 @@ export class Workview {
         console.debug("Updating editors to " + JSON.stringify(this.editors));
     }
 
+    setEditorsFromWindow() {
+        console.debug("Writing editors from vscode window.");
+        this.editors = [];
+        const groups = vscode.window.tabGroups.all;
+        for (const group of groups) {
+            for (const tab of group.tabs) {
+                if (tab.input instanceof vscode.TabInputText) {
+                    this.editors.push({
+                        uri: tab.input.uri.toString(),
+                        viewColumn: group.viewColumn || 1,
+                        visible: tab.isActive
+                    });
+                }
+            }
+        }
+    }
+
     findEditor(uri: string) : Editor {
         return this.editors.filter((e)=> {return e.uri == uri;})[0];
     }
@@ -279,17 +296,6 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
         await this.save();
     }
 
-    async handleTextDocumentClosed(document: vscode.TextDocument) {
-        let view = this.activeWorkview();
-        if (!view) return;
-        let uri = document.uri.toString();
-        // remove from editors if not pinned
-        if (view.findEditor(uri)) {
-            view.removeEditor(uri);
-            await this.notifyChanged();
-        }
-    }
-
     async forActiveWorkview(fn: (workview: Workview)=>boolean, forceSave: boolean = false) {
         let view = this.activeWorkview();
         if (!view) return;
@@ -299,11 +305,11 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
         }
     }
 
-    async setVisibleEditors(editors: vscode.TextEditor[]) {
+    async handleVisibleTextEditorsChanged(editors: readonly vscode.TextEditor[]) {
 		console.debug("Visible editors updated.");
         let view = this.activeWorkview();
         if (!view) return;
-        view.setVisibleEditors(editors);
+        view.setEditorsFromWindow();
         await this.notifyChanged();
     }
 
@@ -318,12 +324,12 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
 
     async clearEditors() {
         // save existing editors
-        let editors = vscode.window.visibleTextEditors;
+        //let editors = vscode.window.visibleTextEditors;
         //let documents = vscode.workspace.textDocuments;
-        console.debug("Found " + editors.length + " editors");
+        //console.debug("Found " + editors.length + " editors");
         let workview = this.activeWorkview();
         if (workview) {
-            workview.setVisibleEditors(editors);
+            workview.setEditorsFromWindow();
         }
         this.activeWorkviewID = undefined;
         return vscode.commands.executeCommand('workbench.action.closeAllGroups');
@@ -344,7 +350,7 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
     async notifyChanged(forceSave: boolean = false) {
         console.debug("Saving if stale.");
         let now = new Date();
-        if (forceSave || ((now.getTime() - this.lastSavedAt.getTime()) / 1000 > 300)) {
+        if (forceSave || ((now.getTime() - this.lastSavedAt.getTime()) / 1000 > 120)) {
             await this.save();
         } else {
             this._onDidChangeTreeData.fire();

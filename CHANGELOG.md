@@ -23,3 +23,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.2.3]
 
 - Added `restorePinnedOnly` option
+
+## [1.3.0]
+
+- Added support for new `TabGroups` API

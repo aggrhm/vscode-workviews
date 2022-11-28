@@ -79,13 +79,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// window events
 	disposable = vscode.window.onDidChangeVisibleTextEditors( (editors)=>{
-		workviewsView.setVisibleEditors(editors);
+		workviewsView.handleVisibleTextEditorsChanged(editors);
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.workspace.onDidCloseTextDocument( (doc)=>{
 		console.debug("Closing document " + doc.uri.toString());
 		//console.debug("Closing document " + doc.fileName);
-		workviewsView.handleTextDocumentClosed(doc);
+		//workviewsView.handleTextDocumentClosed(doc);
 	});
 	context.subscriptions.push(disposable);
 }
