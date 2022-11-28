@@ -36,5 +36,5 @@ $ code --install-extension workviews-1.1.x.vsix
 
 # or
 
-$ vsce publish [major|minor|patch]
+$ vsce publish [major|minor|patch] or x.y.z
 ```
