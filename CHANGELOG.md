@@ -27,3 +27,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.3.0]
 
 - Added support for new `TabGroups` API
+
+## [1.3.1]
+
+- Use `TabGroups` events to update workview state

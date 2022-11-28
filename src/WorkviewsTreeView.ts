@@ -313,6 +313,16 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
         await this.notifyChanged();
     }
 
+    async handleWindowTabChanged(event: vscode.TabChangeEvent) {
+		console.debug("Window tab changed.");
+        let view = this.activeWorkview();
+        if (!view) return;
+        if (event.opened.length > 0 || event.closed.length > 0) {
+            view.setEditorsFromWindow();
+            await this.notifyChanged();
+        }
+    }
+
     async openDocument(document: Document) {
         let doc = await vscode.workspace.openTextDocument(vscode.Uri.parse(document.uri));
         await vscode.window.showTextDocument(doc, {viewColumn: document.lastViewColumn, preview: false});

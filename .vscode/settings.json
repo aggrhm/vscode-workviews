@@ -7,5 +7,6 @@
         "out": true // set this to false to include "out" folder in search results
     },
     // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-    "typescript.tsc.autoDetect": "off"
+    "typescript.tsc.autoDetect": "off",
+    "workviews.state": "eyJ3b3Jrdmlld3MiOlt7ImlkIjoiMTY2OTY0NTczNjEyMiIsIm5hbWUiOiJSZXZpZXciLCJlZGl0b3JzIjpbeyJ1cmkiOiJmaWxlOi8vL1VzZXJzL2FsYW4vUHJvamVjdHMvdG9vbHMvdnNjb2RlLXdvcmt2aWV3cy9zcmMvV29ya3ZpZXdzVHJlZVZpZXcudHMiLCJ2aWV3Q29sdW1uIjoxLCJ2aXNpYmxlIjpmYWxzZX0seyJ1cmkiOiJmaWxlOi8vL1VzZXJzL2FsYW4vUHJvamVjdHMvdG9vbHMvdnNjb2RlLXdvcmt2aWV3cy9zcmMvZXh0ZW5zaW9uLnRzIiwidmlld0NvbHVtbiI6MSwidmlzaWJsZSI6ZmFsc2V9LHsidXJpIjoiZmlsZTovLy9Vc2Vycy9hbGFuL1Byb2plY3RzL3Rvb2xzL3ZzY29kZS13b3Jrdmlld3MvUkVBRE1FLm1kIiwidmlld0NvbHVtbiI6MSwidmlzaWJsZSI6dHJ1ZX1dLCJwaW5uZWREb2N1bWVudHMiOltdfV0sImFjdGl2ZVdvcmt2aWV3SUQiOiIxNjY5NjQ1NzM2MTIyIn0="
 }

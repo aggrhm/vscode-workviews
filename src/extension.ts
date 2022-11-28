@@ -78,8 +78,12 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	// window events
+	disposable = vscode.window.tabGroups.onDidChangeTabs( (ev)=> {
+		workviewsView.handleWindowTabChanged(ev);
+	});
+	context.subscriptions.push(disposable);
 	disposable = vscode.window.onDidChangeVisibleTextEditors( (editors)=>{
-		workviewsView.handleVisibleTextEditorsChanged(editors);
+		//workviewsView.handleVisibleTextEditorsChanged(editors);
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.workspace.onDidCloseTextDocument( (doc)=>{
