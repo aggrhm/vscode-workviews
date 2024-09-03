@@ -127,29 +127,38 @@ export class TreeItem {
 }
 
 export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
+    extensionContext: vscode.ExtensionContext | undefined;
     workviews: Workview[];
     activeWorkviewID?: string;
-    lastSavedAt: Date;
+    lastSavedAt: Date | undefined;
 
     constructor() {
         this.workviews = [];
+    }
+
+    loadForContext(context: vscode.ExtensionContext) {
+        this.extensionContext = context;
         // load from workspace
-        console.debug("Loading workviews state from settings");
-        const base64 = vscode.workspace.getConfiguration().get('workviews.state', '');
-        const decoded = Buffer.from(base64, 'base64').toString('ascii');
-        try {
-            const data = JSON.parse(decoded);
-            this.workviews = data.workviews.map( (s : any) => {
-                return new Workview(s.id, s.name, s.editors || [], s.pinnedDocuments || []);
-            });
-            if (data.activeWorkviewID && vscode.workspace.getConfiguration().get('workviews.rememberActiveWorkview', false)) {
-                this.activeWorkviewID = data.activeWorkviewID;
+        console.debug("Loading workviews state from extension state");
+        //const base64 = vscode.workspace.getConfiguration().get('workviews.state', '');
+        //const decoded = Buffer.from(base64, 'base64').toString('ascii');
+        const json = this.extensionContext.workspaceState.get<string>("workviews.state");
+        if (json !== undefined) {
+            try {
+                const data = JSON.parse(json);
+                this.workviews = data.workviews.map( (s : any) => {
+                    return new Workview(s.id, s.name, s.editors || [], s.pinnedDocuments || []);
+                });
+                if (data.activeWorkviewID && vscode.workspace.getConfiguration().get('workviews.rememberActiveWorkview', false)) {
+                    this.activeWorkviewID = data.activeWorkviewID;
+                }
+                console.debug("Settings successfully loaded.");
+            } catch (ex:any) {
+                console.debug(`Settings were not successfully decoded (${ex.message}).`);
             }
-            console.debug("Settings successfully loaded.");
-        } catch (ex:any) {
-            console.debug(`Settings were not successfully decoded (${ex.message}).`);
         }
         this.lastSavedAt = new Date();
+        this._onDidChangeTreeData.fire();
     }
 
     private _onDidChangeTreeData = new vscode.EventEmitter<TreeItem | void>();
@@ -346,11 +355,16 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
     }
 
     async save() {
+        if (!this.extensionContext) { 
+            console.log("Extension context not defined");
+            return;
+        }
         console.log("Saving state.");
         const json = JSON.stringify({workviews: this.workviews, activeWorkviewID: this.activeWorkviewID});
         console.debug("Saving " + json);
-        const data = Buffer.from(json).toString("base64");
-        await vscode.workspace.getConfiguration().update("workviews.state", data, false);
+        await this.extensionContext.workspaceState.update("workviews.state", json);
+        //const data = Buffer.from(json).toString("base64");
+        //await vscode.workspace.getConfiguration().update("workviews.state", data, false);
         this._onDidChangeTreeData.fire();
         console.debug("Saved.");
         this.lastSavedAt = new Date();
@@ -360,7 +374,9 @@ export class WorkviewsTreeView implements vscode.TreeDataProvider<TreeItem> {
     async notifyChanged(forceSave: boolean = false) {
         console.debug("Saving if stale.");
         let now = new Date();
-        if (forceSave || ((now.getTime() - this.lastSavedAt.getTime()) / 1000 > 120)) {
+        let lst = this.lastSavedAt;
+        let shouldSave = (lst == undefined) || ((now.getTime() - lst.getTime()) / 1000 > 30 );
+        if (forceSave || shouldSave) {
             await this.save();
         } else {
             this._onDidChangeTreeData.fire();

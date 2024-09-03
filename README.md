@@ -20,11 +20,15 @@ Your active workview is automatically saved each time it is switched. The extens
 
 This extension contributes the following settings:
 
-* `workviews.state`: (readonly) The internal state of the extension, allowing workviews to be persisted
 * `workviews.rememberActiveWorkview`: (boolean) Keep track of active workview in saved state
 * `workviews.restorePinnedOnly`: (boolean) Restore only the pinned and last viewed documents, rather than all documents opened
 
 ## Release Notes
+
+For testing:
+
+* Install NPM and run `npm install`
+* run `npm run compile`
 
 For local deployment:
 

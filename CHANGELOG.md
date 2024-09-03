@@ -31,3 +31,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.3.1]
 
 - Use `TabGroups` events to update workview state
+
+## [1.4.0]
+
+- Use `ExtensionContext.workspaceState` for workviews state
